@@ -117,16 +117,16 @@ func (c *LRU[K, V]) Purge() {
 // Add adds a value to the cache. Returns true if an eviction occurred.
 // Returns false if there was no eviction: the item was already in the cache,
 // or the size was not exceeded.
-func (c *LRU[K, V]) Add(key K, value V, begin *time.Time) (evicted bool) {
+func (c *LRU[K, V]) Add(key K, value V, dur time.Duration) (evicted bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
 	var now time.Time
 
-	if begin == nil {
+	if dur == 0 {
 		now = time.Now()
 	} else {
-		now = *begin
+		now = time.Now().Add(dur)
 	}
 
 	// Check for existing item
