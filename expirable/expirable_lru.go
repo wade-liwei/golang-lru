@@ -128,13 +128,15 @@ func (c *LRU[K, V]) Add(key K, value V, delta time.Duration) (evicted bool) {
 		c.evictList.MoveToFront(ent)
 		c.removeFromBucket(ent) // remove the entry from its current bucket as expiresAt is renewed
 		ent.Value = value
-		ent.ExpiresAt = now.Add(c.ttl + delta)
+		//ent.ExpiresAt = now.Add(c.ttl + delta)
+		ent.ExpiresAt = now.Add(delta)
 		c.addToBucket(ent)
 		return false
 	}
 
 	// Add new item
-	ent := c.evictList.PushFrontExpirable(key, value, now.Add(c.ttl+delta))
+	//ent := c.evictList.PushFrontExpirable(key, value, now.Add(c.ttl+delta))
+	ent := c.evictList.PushFrontExpirable(key, value, now.Add(delta))
 	c.items[key] = ent
 	c.addToBucket(ent) // adds the entry to the appropriate bucket and sets entry.expireBucket
 
