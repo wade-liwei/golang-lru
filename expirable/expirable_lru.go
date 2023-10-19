@@ -134,7 +134,7 @@ func (c *LRU[K, V]) Add(key K, value V, delta time.Duration) (evicted bool) {
 	}
 
 	// Add new item
-	ent := c.evictList.PushFrontExpirable(key, value, now.Add(c.ttl))
+	ent := c.evictList.PushFrontExpirable(key, value, now.Add(c.ttl+delta))
 	c.items[key] = ent
 	c.addToBucket(ent) // adds the entry to the appropriate bucket and sets entry.expireBucket
 
