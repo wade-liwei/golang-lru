@@ -117,7 +117,7 @@ func (c *LRU[K, V]) Purge() {
 // Add adds a value to the cache. Returns true if an eviction occurred.
 // Returns false if there was no eviction: the item was already in the cache,
 // or the size was not exceeded.
-func (c *LRU[K, V]) Add(key K, value V, i int) (evicted bool) {
+func (c *LRU[K, V]) Add(key K, value V, delta time.Duration) (evicted bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -128,7 +128,7 @@ func (c *LRU[K, V]) Add(key K, value V, i int) (evicted bool) {
 		c.evictList.MoveToFront(ent)
 		c.removeFromBucket(ent) // remove the entry from its current bucket as expiresAt is renewed
 		ent.Value = value
-		ent.ExpiresAt = now.Add(c.ttl * time.Duration(i))
+		ent.ExpiresAt = now.Add(c.ttl + delta)
 		c.addToBucket(ent)
 		return false
 	}
